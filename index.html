@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Face Match Tabs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .images { display: flex; gap: 20px; margin-bottom: 20px; }
+    .images div { text-align: center; }
+    .images img { max-width: 300px; border: 1px solid #ccc; padding: 5px; }
+    table { border-collapse: collapse; margin-top: 10px; width: 100%; }
+    table, th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f0f0f0; }
+    #multiStatus {font-size: 24px; margin-top: 10px;}
+    #imageContainer { position: relative; display: inline-block; }
+    #imageContainer canvas { position: absolute; top: 0; left: 0; }
+  </style>
+</head>
+<body class="p-4">
+
+  <h2 class="text-center">Face API Demo</h2>
+
+  <!-- Nav Tabs -->
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="face-tab" data-bs-toggle="tab" data-bs-target="#face" 
+      type="button" role="tab" aria-controls="face" aria-selected="true">Face Match</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="multi-tab" data-bs-toggle="tab" data-bs-target="#multi" 
+      type="button" role="tab" aria-controls="multi" aria-selected="false">Multiple Face Detection</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="other-tab" data-bs-toggle="tab" data-bs-target="#other" 
+      type="button" role="tab" aria-controls="other" aria-selected="false">Emotion Detection</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="blazeface-tab" data-bs-toggle="tab" data-bs-target="#blazeface" 
+      type="button" role="tab" aria-controls="blazeface" aria-selected="false">Webcam Blazeface</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="facemesh-tab" data-bs-toggle="tab" data-bs-target="#facemesh" 
+      type="button" role="tab" aria-controls="facemesh" aria-selected="false">Webcam FaceMesh</button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content" id="myTabContent">
+
+    <!-- Face Match Tab -->
+    <div class="tab-pane fade show active" id="face" role="tabpanel" aria-labelledby="face-tab">
+      <div class="images mt-3">
+        <div>
+          <h5>Reference Image</h5>
+          <input type="file" id="referenceInput" accept="image/*"><br><br>
+          <img id="referenceImage" src="" alt="Reference Image">
+        </div>
+        <div>
+          <h5>Test Image</h5>
+          <input type="file" id="testInput" accept="image/*"><br><br>
+          <img id="testImage" src="" alt="Test Image">
+        </div>
+      </div>
+
+      <button id="matchButton" class="btn btn-primary btn-sm">Run Face Match</button>
+
+      <p class="mt-2">Prediction: <input id="prediction" type="text" disabled></p>
+
+      <h5>Distances</h5>
+      <div style="display: inline-block; border: 1px solid #ccc; padding: 8px; border-radius: 5px; background-color: #f9f9f9;">
+        <table id="distanceTable" style="border-collapse: collapse; font-size: 0.9rem;">
+          <thead>
+            <tr>
+              <th style="padding: 4px 8px;">Label</th>
+              <th style="padding: 4px 8px;">Distance</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Multiple Face Landmark Detection Tab -->
+    <div class="tab-pane fade" id="multi" role="tabpanel" aria-labelledby="multi-tab">
+      <h5 class="mt-3">Please Upload An Image</h5>
+
+      <input type="file" id="imageUpload" accept="image/*" />
+      <div id="multiStatus" style="font-size: 24px; margin-top: 10px;"></div>
+      <ul id="detectionScores"></ul>
+      <div id="imageContainer" class="mt-2"><img id="inputImage" /></div>
+      <br><br>
+      <button class="btn btn-primary btn-sm" id="analyzeBtn">Analyze</button>
+    </div>
+
+    <!-- Emotion Detection Tab -->
+    <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
+      <div class="images mt-3">
+        <div>
+          <h5>Upload One Detectable Face Image</h5>
+          <input type="file" id="imageInput" accept="image/*"><br><br>
+          <img id="imageDisplay" src="" alt="Uploaded Image">
+        </div>
+      </div>
+
+      <button id="analyzeButton" class="btn btn-primary btn-sm">Analyze Face</button>
+
+      <h5 class="mt-3">Face Analysis</h5>
+      <table id="resultTable" style="border: 1px solid #ccc; border-collapse: collapse; font-size: 0.85rem; width: auto;">
+        <tbody>
+          <tr>
+            <th style="border: 1px solid #ccc; padding: 4px 8px; text-align: left;">Age</th>
+            <td id="ageValue" style="border: 1px solid #ccc; padding: 4px 8px;">--</td>
+          </tr>
+          <tr>
+            <th style="border: 1px solid #ccc; padding: 4px 8px; text-align: left;">Gender</th>
+            <td id="genderValue" style="border: 1px solid #ccc; padding: 4px 8px;">--</td>
+          </tr>
+          <tr>
+            <th style="border: 1px solid #ccc; padding: 4px 8px; text-align: left;">Emotion</th>
+            <td id="emotionValue" style="border: 1px solid #ccc; padding: 4px 8px;">--</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Webcam BlazeFace Tab -->
+    <div class="tab-pane fade" id="blazeface" role="tabpanel" aria-labelledby="blazeface-tab">
+      <h5 class="mt-3">Webcam BlazeFace Detection</h5>
+      <video id="blazeVideo" autoplay muted playsinline></video>
+      <canvas id="blazeCanvas"></canvas>
+
+      <h5>Face Metrics</h5>
+      <div style="display: inline-block; border: 1px solid #ccc; padding: 8px; border-radius: 5px; background-color: #f9f9f9;">
+        <table id="faceMetricsTable" style="border-collapse: collapse; font-size: 0.9rem;">
+          <thead>
+            <tr>
+              <th style="padding: 4px 8px;">Face ID</th>
+              <th style="padding: 4px 8px;">Width</th>
+              <th style="padding: 4px 8px;">Height</th>
+              <th style="padding: 4px 8px;">Eye Distance</th>
+              <th style="padding: 4px 8px;">Tilt Angle (°)</th>
+              <th style="padding: 4px 8px;">Velocity X</th>
+              <th style="padding: 4px 8px;">Velocity Y</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- Webcam BlazeFace Tab -->
+    <div class="tab-pane fade" id="facemesh" role="tabpanel" aria-labelledby="facemesh-tab">
+      <h6 class="mt-3">Webcam FaceMesh Detection</h6>
+      <h6 class="mt-3">AR Filter Coming Soon...</h6>
+      <div style="position: relative; width: 720px;">
+        <video id="meshVideo" autoplay muted playsinline style="display:none;"></video>
+        <canvas id="meshCanvas" width="720" height="720"></canvas>
+      </div>
+    </div>
+
+  </div> <!-- end of tab-content -->
+
+  <!-- <script src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>   
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.9.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+  <script src="script.js"></script> -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.9.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@0.0.1/dist/face-landmarks-detection.js"></script>
+  <script src="triangulation.js"></script>
+  <script src="script.js"></script>
+  
+</body>
+</html>
